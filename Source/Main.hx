@@ -1,34 +1,47 @@
 package ;
 
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.Lib;
+import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.Lib;
+import openfl.events.KeyboardEvent;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
+
+enum GameState {
+	Paused;
+	Playing;
+}
 
 class Main extends Sprite
 {
-	var _isInitialized:Bool;
+	private var _isInitialzed:Bool;
 
+	private var _snake:Snake;
+	
 	/* ENTRY POINT */
 
-	function resize(e)
+	function onResize(e)
 	{
-		if (!_isInitialized)
-        {
-            init();
-        }
+		if (!_isInitialzed)
+		{
+			init();
+		}
 		// else (resize or orientation change)
 	}
 
 	function init()
 	{
-		if (_isInitialized)
-        {
-            return;
-        }
+		if (_isInitialzed)
+		{
+			return;
+		}
+		_isInitialzed = true;
 
-		_isInitialized = true;
+		_snake = new Snake(5);
+		trace("Created new snake");
 
-		// code
+        this.addChild(_snake);
 	}
 
 	/* SETUP */
@@ -36,13 +49,15 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-		addEventListener(Event.ADDED_TO_STAGE, added);
+
+		trace("Main");
+		addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 	}
 
-	function added(e)
+	function onAddedToStage(e)
 	{
-		removeEventListener(Event.ADDED_TO_STAGE, added);
-		stage.addEventListener(Event.RESIZE, resize);
+		removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+		stage.addEventListener(Event.RESIZE, onResize);
 		#if ios
 		haxe.Timer.delay(init, 100); // iOS 6
 		#else
