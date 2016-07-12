@@ -51,7 +51,7 @@ class Food extends Sprite
         {   
             for (i in 0..._model.SnakeModel.SectionsCount)
             {
-                var snakeSection = _model.SnakeModel.GetSectionByIndex(i);
+                var snakeSection = _model.SnakeModel.getSectionByIndex(i);
                 // ugly for now because of stupid vector
                 if (snakeSection != null && snakeSection.x == this.x && snakeSection.y == this.y)
                 {

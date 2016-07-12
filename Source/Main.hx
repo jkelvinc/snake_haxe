@@ -4,9 +4,8 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
-import openfl.text.TextField;
-import openfl.text.TextFormat;
-import openfl.text.TextFormatAlign;
+import openfl.utils.Timer;
+import openfl.events.TimerEvent;
 
 enum GameState {
 	Paused;
@@ -20,7 +19,9 @@ class Main extends Sprite
 	private var _snake:Snake;
 	private var _food:Food;
 	private var _scoring:Scoring;
-	
+	private var _timer:Timer;
+
+
 	/* ENTRY POINT */
 
 	function onResize(e)
@@ -40,6 +41,8 @@ class Main extends Sprite
 		}
 		_isInitialzed = true;
 
+		// TODO: take a look at IOC via minject
+
 		_scoring = new Scoring();
 		this.addChild(_scoring);
 
@@ -48,6 +51,12 @@ class Main extends Sprite
 
 		_food = new Food(0xFF0000, _snake.Model);
 		this.addChild(_food);
+
+		_snake.Food = _food;
+
+		_timer = new Timer(33);
+		_timer.addEventListener(TimerEvent.TIMER, timerTick);
+		_timer.start();
 	}
 
 	/* SETUP */
@@ -77,5 +86,13 @@ class Main extends Sprite
 		Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		Lib.current.addChild(new Main());
 		//
+	}
+
+	private function timerTick(timerEvent:TimerEvent):Void
+	{
+		if (_snake != null)
+		{
+			_snake.tick(timerEvent);
+		}
 	}
 }
