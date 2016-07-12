@@ -5,14 +5,10 @@ import openfl.display.Sprite;
 class Snake extends Sprite
 {
     private var _model:SnakeModel;
-    private var _minSectionsCount:Int;
-    private var _sectionsSpacing:Int;
-    private var _snakeColour:Int;
+
     private var _snakeSectionWidth:Int;
     private var _snakeSectionHeight:Int;
 
-    private var _startinglastSectionXPos:Int;
-    private var _startinglastSectionYPos:Int;
 
     public function new(length:Int)
     {
@@ -22,16 +18,13 @@ class Snake extends Sprite
 
     public function init(length:Int)
     {
-        _sectionsSpacing = 2;
-        _minSectionsCount = 4;
         _snakeSectionWidth = 10;
         _snakeSectionHeight = 10;
-        _snakeColour = 0x00AAFF;
-
-        _startinglastSectionXPos = 20;
-        _startinglastSectionYPos = 20;
-
+        
         _model = new SnakeModel();
+        _model.SectionsSpacing = 2;
+        _model.Colour = 0x00AAFF;
+
         createSections(length);
     }
 
@@ -45,29 +38,26 @@ class Snake extends Sprite
         {
             case "Right":
             {
-                section.x = lastSectionXPos - _snakeSectionWidth - _sectionsSpacing;
+                section.x = lastSectionXPos - _snakeSectionWidth - _model.SectionsSpacing;
                 section.y = lastSectionYPos;
-
-                trace("snake x: " + section.x);
-                trace("snake y: " + section.y);
             }
 
             case "Left":
             {
-                section.x = lastSectionXPos + _snakeSectionWidth + _sectionsSpacing;
+                section.x = lastSectionXPos + _snakeSectionWidth + _model.SectionsSpacing;
                 section.y = lastSectionYPos;
             }
 
             case "Up":
             {
                 section.x = lastSectionXPos;
-                section.y = lastSectionYPos + _snakeSectionHeight + _sectionsSpacing;
+                section.y = lastSectionYPos + _snakeSectionHeight + _model.SectionsSpacing;
             }
 
             case "Down":
             {
                 section.x = lastSectionXPos;
-                section.y = lastSectionYPos - _snakeSectionHeight - _sectionsSpacing;
+                section.y = lastSectionYPos - _snakeSectionHeight - _model.SectionsSpacing;
             }
         }
 
@@ -78,7 +68,7 @@ class Snake extends Sprite
     {
         for (i in 0...length)
         {   
-            var s = new SnakeSection(_snakeColour, _snakeSectionWidth, _snakeSectionHeight);
+            var s = new SnakeSection(_model.Colour, _snakeSectionWidth, _snakeSectionHeight);
             s.Direction = "Right";
             _model.AddSection(s, i);
             if (i == 0)
@@ -86,8 +76,8 @@ class Snake extends Sprite
                 // head
                 s.alpha = 0.6;
                 attachSection(s, 
-                            (s.width + _sectionsSpacing) * _startinglastSectionXPos, 
-                            (s.height + _sectionsSpacing) * _startinglastSectionYPos, 
+                            (s.width + _model.SectionsSpacing) * SnakeModel.STARTING_XPOS, 
+                            (s.height + _model.SectionsSpacing) * SnakeModel.STARTING_YPOS, 
                             s.Direction);
             }
             else
