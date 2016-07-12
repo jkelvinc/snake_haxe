@@ -7,6 +7,8 @@ import openfl.events.KeyboardEvent;
 import openfl.utils.Timer;
 import openfl.events.TimerEvent;
 
+// import msignal.Signal;
+
 enum GameState {
 	Paused;
 	Playing;
@@ -53,6 +55,7 @@ class Main extends Sprite
 		this.addChild(_food);
 
 		_snake.Food = _food;
+		// _snake.DiedSignal.add(onSnakeDied);
 
 		_timer = new Timer(33);
 		_timer.addEventListener(TimerEvent.TIMER, timerTick);
@@ -66,17 +69,6 @@ class Main extends Sprite
 		super();
 
 		addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-	}
-
-	function onAddedToStage(e)
-	{
-		removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-		stage.addEventListener(Event.RESIZE, onResize);
-		#if ios
-		haxe.Timer.delay(init, 100); // iOS 6
-		#else
-		init();
-		#end
 	}
 
 	public static function main()
@@ -94,5 +86,21 @@ class Main extends Sprite
 		{
 			_snake.tick(timerEvent);
 		}
+	}
+
+	private function onAddedToStage(e)
+	{
+		removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+		stage.addEventListener(Event.RESIZE, onResize);
+		#if ios
+		haxe.Timer.delay(init, 100); // iOS 6
+		#else
+		init();
+		#end
+	}
+
+	private function onSnakeDied()
+	{
+		trace("Snake Died");
 	}
 }

@@ -5,9 +5,13 @@ import openfl.utils.Timer;
 import openfl.events.TimerEvent;
 import openfl.Lib;
 
+// import msignal.Signal;
+
 class Snake extends Sprite
 {
     public var Model(get, null):SnakeModel;
+
+    // public var DiedSignal(default, null):Signal0;
 
     // look into minject to inject that later
     public var Food(default, default):Food;
@@ -21,6 +25,7 @@ class Snake extends Sprite
 
     public function init(length:Int)
     {
+        // DiedSignal = new Signal0();
         _model = new SnakeModel();
         _model.Colour = 0x00AAFF;
         
@@ -45,7 +50,7 @@ class Snake extends Sprite
         if (Food != null && 
             head.x == Food.x && head.y == Food.y)
         {
-            
+            // DiedSignal.dispatch();
         }
         
         // detect out of bounds
@@ -54,7 +59,7 @@ class Snake extends Sprite
             head.y > Lib.current.stage.stageHeight - head.height || 
             head.y < 0)
         {
-            
+            // DiedSignal.dispatch();
         }
         
         var snakeSection:SnakeSection = null;
