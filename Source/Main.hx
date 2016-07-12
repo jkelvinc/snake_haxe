@@ -18,6 +18,8 @@ class Main extends Sprite
 	private var _isInitialzed:Bool;
 
 	private var _snake:Snake;
+	private var _food:Food;
+	private var _scoring:Scoring;
 	
 	/* ENTRY POINT */
 
@@ -38,10 +40,14 @@ class Main extends Sprite
 		}
 		_isInitialzed = true;
 
-		_snake = new Snake(5);
-		trace("Created new snake");
+		_scoring = new Scoring();
+		this.addChild(_scoring);
 
+		_snake = new Snake(Constants.MIN_SNAKE_SECTIONS_COUNT);
         this.addChild(_snake);
+
+		_food = new Food(0xFF0000, _snake.Model);
+		this.addChild(_food);
 	}
 
 	/* SETUP */
@@ -50,7 +56,6 @@ class Main extends Sprite
 	{
 		super();
 
-		trace("Main");
 		addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 	}
 
