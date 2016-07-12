@@ -4,11 +4,8 @@ import openfl.display.Sprite;
 
 class Snake extends Sprite
 {
+    public var Model(get, null):SnakeModel;
     private var _model:SnakeModel;
-
-    private var _snakeSectionWidth:Int;
-    private var _snakeSectionHeight:Int;
-
 
     public function new(length:Int)
     {
@@ -18,14 +15,15 @@ class Snake extends Sprite
 
     public function init(length:Int)
     {
-        _snakeSectionWidth = 10;
-        _snakeSectionHeight = 10;
-        
         _model = new SnakeModel();
-        _model.SectionsSpacing = 2;
         _model.Colour = 0x00AAFF;
-
+        
         createSections(length);
+    }
+
+    private function get_Model():SnakeModel
+    {
+        return _model;
     }
 
     /**
@@ -36,28 +34,28 @@ class Snake extends Sprite
     {
         switch (direction)
         {
-            case "Right":
+            case Constants.DIRECTION_RIGHT:
             {
-                section.x = lastSectionXPos - _snakeSectionWidth - _model.SectionsSpacing;
+                section.x = lastSectionXPos - Constants.GRID_ELEMENT_WIDTH - Constants.GRID_ELEMENT_SPACING;
                 section.y = lastSectionYPos;
             }
 
-            case "Left":
+            case Constants.DIRECTION_LEFT:
             {
-                section.x = lastSectionXPos + _snakeSectionWidth + _model.SectionsSpacing;
+                section.x = lastSectionXPos + Constants.GRID_ELEMENT_WIDTH + Constants.GRID_ELEMENT_SPACING;
                 section.y = lastSectionYPos;
             }
 
-            case "Up":
+            case Constants.DIRECTION_UP:
             {
                 section.x = lastSectionXPos;
-                section.y = lastSectionYPos + _snakeSectionHeight + _model.SectionsSpacing;
+                section.y = lastSectionYPos + Constants.GRID_ELEMENT_WIDTH + Constants.GRID_ELEMENT_SPACING;
             }
 
-            case "Down":
+            case Constants.DIRECTION_DOWN:
             {
                 section.x = lastSectionXPos;
-                section.y = lastSectionYPos - _snakeSectionHeight - _model.SectionsSpacing;
+                section.y = lastSectionYPos - Constants.GRID_ELEMENT_WIDTH - Constants.GRID_ELEMENT_SPACING;
             }
         }
 
@@ -68,7 +66,7 @@ class Snake extends Sprite
     {
         for (i in 0...length)
         {   
-            var s = new SnakeSection(_model.Colour, _snakeSectionWidth, _snakeSectionHeight);
+            var s = new SnakeSection(_model.Colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
             s.Direction = "Right";
             _model.AddSection(s, i);
             if (i == 0)
@@ -76,8 +74,8 @@ class Snake extends Sprite
                 // head
                 s.alpha = 0.6;
                 attachSection(s, 
-                            (s.width + _model.SectionsSpacing) * SnakeModel.STARTING_XPOS, 
-                            (s.height + _model.SectionsSpacing) * SnakeModel.STARTING_YPOS, 
+                            (s.width + Constants.GRID_ELEMENT_SPACING) * Constants.SNAKE_STARTING_XPOS, 
+                            (s.height + Constants.GRID_ELEMENT_SPACING) * Constants.SNAKE_STARTING_YPOS, 
                             s.Direction);
             }
             else
