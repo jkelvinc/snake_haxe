@@ -1,23 +1,25 @@
 package;
 
 import api.IUpdatable;
+import msignal.Signal;
 
 import openfl.display.Sprite;
 import openfl.utils.Timer;
 import openfl.events.TimerEvent;
 import openfl.Lib;
 
-// import msignal.Signal;
-
 class Snake extends Sprite implements IUpdatable
 {
     public var Model(get, null):SnakeModel;
 
-    // public var DiedSignal(default, null):Signal0;
+    public var SnakeDiedSignal(default, null):Signal0;
+    public var InputProcessedSignal(default, null):Signal0;
 
     // look into minject to inject that later
     public var Food(default, default):Food;
     private var _model:SnakeModel;
+    private var _inputData:InputData;
+    private var _inputProcessor:InputProcessor;
 
     public function new(length:Int)
     {
@@ -27,7 +29,9 @@ class Snake extends Sprite implements IUpdatable
 
     public function init(length:Int):Void
     {
-        // DiedSignal = new Signal0();
+        SnakeDiedSignal = new Signal0();
+        InputProcessedSignal = new Signal0();
+
         _model = new SnakeModel();
         _model.Colour = 0x00AAFF;
         
@@ -39,6 +43,22 @@ class Snake extends Sprite implements IUpdatable
         move();
     }
 
+    public function setInputProcessor(inputProcessor:InputProcessor)
+    {
+        _inputProcessor = inputProcessor;
+    }
+
+    public function processInput(data:InputData)
+    {
+        if (data == null)
+        {
+            return;
+        }
+
+trace("Process snake input");
+        _inputData = data;
+    }
+
     private function move():Void
     {
         // detect collision between food and snake
@@ -48,10 +68,9 @@ class Snake extends Sprite implements IUpdatable
             return;
         }
 
-        if (Food != null && 
-            head.x == Food.x && head.y == Food.y)
+        if (Food != null && head.x == Food.x && head.y == Food.y)
         {
-            // DiedSignal.dispatch();
+            collectFood();
         }
         
         // detect out of bounds
@@ -60,22 +79,34 @@ class Snake extends Sprite implements IUpdatable
             head.y > Lib.current.stage.stageHeight - head.height || 
             head.y < 0)
         {
-            // DiedSignal.dispatch();
+            killSnake();
         }
         
         var snakeSection:SnakeSection = null;
         for (i in 0..._model.SectionsCount)
-        {            
+        {  
             snakeSection = _model.getSectionByIndex(i);
             if (snakeSection == null)
             {
                 break;
             }
 
+            // set direction of the sections
+            if (_inputData != null)
+            {
+                trace("snake section x " + snakeSection.x + "| turn X: " + _inputData.TurnPositionX + ", section y: " + snakeSection.y + "| turn Y: " + _inputData.TurnPositionY);
+
+                if (snakeSection.x == _inputData.TurnPositionX && snakeSection.y == _inputData.TurnPositionY)
+                {
+                    snakeSection.Direction = _inputData.Direction;
+                }
+            }
+
             if (_model.getSectionByIndex(i) != head && 
                 (head.x == snakeSection.x && head.y == snakeSection.y))
             {
                 // if head is the same as any section, this means we collided with ourself
+                killSnake();
             }
 
             // update snake sections    
@@ -92,17 +123,60 @@ class Snake extends Sprite implements IUpdatable
                     snakeSection.x -= Constants.GRID_ELEMENT_WIDTH + Constants.GRID_ELEMENT_SPACING;
                 }
 
-                case Constants.DIRECTION_UP:
+                case Constants.DIRECTION_DOWN:
                 {
                     snakeSection.y += Constants.GRID_ELEMENT_HEIGHT + Constants.GRID_ELEMENT_SPACING;
                 }
 
-                case Constants.DIRECTION_DOWN:
+                case Constants.DIRECTION_UP:
                 {
                     snakeSection.y -= Constants.GRID_ELEMENT_HEIGHT + Constants.GRID_ELEMENT_SPACING;
                 }
             }
         }
+
+        // consumeInputData();
+    }
+
+    private function consumeInputData()
+    {
+        if (_inputData == null)
+        {
+            return;
+        }
+
+trace("consume input data");
+        // check to see if all sections have turned before consuming the data
+        var turnCount:Int = 0;
+        for (i in 0..._model.SectionsCount)
+        { 
+            if (_model.getSectionByIndex(i) == null)
+            {
+                break;
+            }
+
+            if (_model.getSectionByIndex(i).Direction == _inputData.Direction)
+            {
+                ++turnCount;
+            }
+        }
+
+        if (turnCount == _model.SectionsCount)
+        {
+            trace("consume input data 2");
+             _inputData = null;
+            InputProcessedSignal.dispatch();            
+        }
+    }
+
+    private function killSnake()
+    {
+        SnakeDiedSignal.dispatch();
+    }
+
+    private function collectFood()
+    {
+
     }
 
     private function get_Model():SnakeModel
