@@ -1,4 +1,6 @@
-package ;
+package;
+
+import api.IUpdatable;
 
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -6,6 +8,7 @@ import openfl.Lib;
 import openfl.events.KeyboardEvent;
 import openfl.utils.Timer;
 import openfl.events.TimerEvent;
+import openfl.ui.Keyboard;
 
 // import msignal.Signal;
 
@@ -23,6 +26,8 @@ class Main extends Sprite
 	private var _scoring:Scoring;
 	private var _timer:Timer;
 
+	private var _updateList:List<IUpdatable>;
+	private var _lastKeyboardButton:Int;
 
 	/* ENTRY POINT */
 
@@ -43,6 +48,11 @@ class Main extends Sprite
 		}
 		_isInitialzed = true;
 
+		_updateList = new List<IUpdatable>();
+
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, onInputChanged);
+		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
+
 		// TODO: take a look at IOC via minject
 
 		_scoring = new Scoring();
@@ -57,9 +67,7 @@ class Main extends Sprite
 		_snake.Food = _food;
 		// _snake.DiedSignal.add(onSnakeDied);
 
-		_timer = new Timer(33);
-		_timer.addEventListener(TimerEvent.TIMER, timerTick);
-		_timer.start();
+		_updateList.add(_snake);
 	}
 
 	/* SETUP */
@@ -80,11 +88,14 @@ class Main extends Sprite
 		//
 	}
 
-	private function timerTick(timerEvent:TimerEvent):Void
+	private function onUpdate(evt:Event)
 	{
-		if (_snake != null)
+		for (obj in _updateList)
 		{
-			_snake.tick(timerEvent);
+			if (obj != null)
+			{
+				obj.update();
+			}
 		}
 	}
 
@@ -102,5 +113,33 @@ class Main extends Sprite
 	private function onSnakeDied()
 	{
 		trace("Snake Died");
+	}
+
+	private function onInputChanged(evt:KeyboardEvent)
+	{
+		if (evt.keyCode == Keyboard.LEFT && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.RIGHT)
+		{
+			// can't go LEFT if we just went RIGHT
+			trace("LEFT");
+			_lastKeyboardButton = Keyboard.LEFT;
+		}
+		else if (evt.keyCode == Keyboard.RIGHT && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.LEFT)
+		{
+			// can't go RIGHT if we just went LEFT
+			trace("RIGHT");
+			_lastKeyboardButton = Keyboard.RIGHT;
+		}
+		else if (evt.keyCode == Keyboard.UP && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.DOWN)
+		{
+			// can't go UP if we just went DOWN
+			trace("UP");
+			_lastKeyboardButton = Keyboard.UP;
+		}
+		else if (evt.keyCode == Keyboard.DOWN && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.UP)
+		{
+			// can't go DOWN if we just went UP
+			trace("DOWN");
+			_lastKeyboardButton = Keyboard.DOWN;
+		}
 	}
 }

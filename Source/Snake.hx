@@ -1,5 +1,7 @@
 package;
 
+import api.IUpdatable;
+
 import openfl.display.Sprite;
 import openfl.utils.Timer;
 import openfl.events.TimerEvent;
@@ -7,7 +9,7 @@ import openfl.Lib;
 
 // import msignal.Signal;
 
-class Snake extends Sprite
+class Snake extends Sprite implements IUpdatable
 {
     public var Model(get, null):SnakeModel;
 
@@ -23,7 +25,7 @@ class Snake extends Sprite
         init(length);
     }
 
-    public function init(length:Int)
+    public function init(length:Int):Void
     {
         // DiedSignal = new Signal0();
         _model = new SnakeModel();
@@ -32,13 +34,12 @@ class Snake extends Sprite
         createSections(length);
     }
 
-    public function tick(timerEvent:TimerEvent)
+    public function update():Void
     {
-        move(timerEvent);
+        move();
     }
 
-
-    private function move(timerEvent:TimerEvent)
+    private function move():Void
     {
         // detect collision between food and snake
         var head = _model.getHead();
@@ -145,7 +146,7 @@ class Snake extends Sprite
         this.addChild(section);
     }
 
-    private function createSections(length:Int)
+    private function createSections(length:Int):Void
     {
         for (i in 0...length)
         {   
