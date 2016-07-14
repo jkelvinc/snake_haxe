@@ -11,10 +11,8 @@ import openfl.Lib;
 class Snake extends Sprite implements IUpdatable
 {
     public var Model(get, null):SnakeModel;
-
     public var SnakeDiedSignal(default, null):Signal0;
-    public var InputProcessedSignal(default, null):Signal0;
-
+    
     // look into minject to inject that later
     public var Food(default, default):Food;
     private var _model:SnakeModel;
@@ -30,7 +28,7 @@ class Snake extends Sprite implements IUpdatable
     public function init(length:Int):Void
     {
         SnakeDiedSignal = new Signal0();
-        InputProcessedSignal = new Signal0();
+        Signals.InputChangedSignal.add(processInput);
 
         _model = new SnakeModel();
         _model.Colour = 0x00AAFF;
@@ -43,12 +41,8 @@ class Snake extends Sprite implements IUpdatable
         move();
     }
 
-    public function setInputProcessor(inputProcessor:InputProcessor)
-    {
-        _inputProcessor = inputProcessor;
-    }
 
-    public function processInput(data:InputData)
+    private function processInput(data:InputData)
     {
         if (data == null)
         {
@@ -165,7 +159,8 @@ class Snake extends Sprite implements IUpdatable
         }
 
         _inputData = null;
-        InputProcessedSignal.dispatch();
+        // InputProcessedSignal.dispatch();
+        Signals.InputProcessedSignal.dispatch();
     }
 
     private function die()
