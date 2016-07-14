@@ -55,87 +55,106 @@ class Snake extends Sprite implements IUpdatable
             return;
         }
 
-trace("Process snake input");
         _inputData = data;
     }
 
     private function move():Void
-    {
-        // detect collision between food and snake
-        var head = _model.getHead();
-        if (head == null)
-        {
-            return;
-        }
+    { 
+        var previousSectionPosition = { x:0.0, y:0.0 };
+        var tempSectionPosition = { x:0.0, y:0.0 };
 
-        if (Food != null && head.x == Food.x && head.y == Food.y)
-        {
-            collectFood();
-        }
-        
-        // detect out of bounds
-        if (head.x > Lib.current.stage.stageWidth - head.width || 
-            head.x < 0 || 
-            head.y > Lib.current.stage.stageHeight - head.height || 
-            head.y < 0)
-        {
-            killSnake();
-        }
-        
-        var snakeSection:SnakeSection = null;
         for (i in 0..._model.SectionsCount)
-        {  
-            snakeSection = _model.getSectionByIndex(i);
-            if (snakeSection == null)
+        {
+            var section = _model.getSectionByIndex(i);
+            if (section == null)
             {
                 break;
             }
 
-            // set direction of the sections
-            if (_inputData != null)
+            if (i == 0)
             {
-                trace("snake section x " + snakeSection.x + "| turn X: " + _inputData.TurnPositionX + ", section y: " + snakeSection.y + "| turn Y: " + _inputData.TurnPositionY);
+                // process head
 
-                if (snakeSection.x == _inputData.TurnPositionX && snakeSection.y == _inputData.TurnPositionY)
+                // process input
+                if (_inputData != null)
                 {
-                    snakeSection.Direction = _inputData.Direction;
+                    section.Direction = _inputData.Direction;
+                }
+
+                previousSectionPosition.x = section.x;
+                previousSectionPosition.y = section.y;
+
+                // move head
+                switch (section.Direction)
+                {
+                    case Constants.DIRECTION_RIGHT:
+                    {
+                        section.x += Constants.GRID_ELEMENT_WIDTH + Constants.GRID_ELEMENT_SPACING;
+                    }
+
+                    case Constants.DIRECTION_LEFT:
+                    {
+                        section.x -= Constants.GRID_ELEMENT_WIDTH + Constants.GRID_ELEMENT_SPACING;
+                    }
+
+                    case Constants.DIRECTION_DOWN:
+                    {
+                        section.y += Constants.GRID_ELEMENT_HEIGHT + Constants.GRID_ELEMENT_SPACING;
+                    }
+
+                    case Constants.DIRECTION_UP:
+                    {
+                        section.y -= Constants.GRID_ELEMENT_HEIGHT + Constants.GRID_ELEMENT_SPACING;
+                    }
+                }
+
+                // detect collision with food
+                if (Food != null && section.x == Food.x && section.y == Food.y)
+                {
+                    collectFood();
+                }
+                
+                // detect collision with game borders
+                if (section.x > Lib.current.stage.stageWidth - section.width || 
+                    section.x < 0 || 
+                    section.y > Lib.current.stage.stageHeight - section.height || 
+                    section.y < 0)
+                {
+                    die();
+                }
+
+                //Detect collission with body
+                for (j in 1..._model.SectionsCount)
+                {
+                    var bodySection = _model.getSectionByIndex(j);
+                    if (bodySection == null)
+                    {
+                        break;
+                    }
+
+                    if (section.x == bodySection.x && section.y == bodySection.y)
+                    {
+                        die();
+                    }
                 }
             }
-
-            if (_model.getSectionByIndex(i) != head && 
-                (head.x == snakeSection.x && head.y == snakeSection.y))
+            else
             {
-                // if head is the same as any section, this means we collided with ourself
-                killSnake();
-            }
+                // process body
 
-            // update snake sections    
-            var direction:String = _model.getSectionByIndex(i).Direction;
-            switch (direction)
-            {
-                case Constants.DIRECTION_RIGHT:
-                {
-                    snakeSection.x += Constants.GRID_ELEMENT_WIDTH + Constants.GRID_ELEMENT_SPACING;
-                }
+                tempSectionPosition.x = previousSectionPosition.x;
+                tempSectionPosition.y = previousSectionPosition.y;
 
-                case Constants.DIRECTION_LEFT:
-                {
-                    snakeSection.x -= Constants.GRID_ELEMENT_WIDTH + Constants.GRID_ELEMENT_SPACING;
-                }
+                previousSectionPosition.x = section.x;
+                previousSectionPosition.y = section.y;
 
-                case Constants.DIRECTION_DOWN:
-                {
-                    snakeSection.y += Constants.GRID_ELEMENT_HEIGHT + Constants.GRID_ELEMENT_SPACING;
-                }
-
-                case Constants.DIRECTION_UP:
-                {
-                    snakeSection.y -= Constants.GRID_ELEMENT_HEIGHT + Constants.GRID_ELEMENT_SPACING;
-                }
+                // move body
+                section.x = tempSectionPosition.x;
+                section.y = tempSectionPosition.y;
             }
         }
 
-        // consumeInputData();
+        consumeInputData();
     }
 
     private function consumeInputData()
@@ -145,31 +164,11 @@ trace("Process snake input");
             return;
         }
 
-trace("consume input data");
-        // check to see if all sections have turned before consuming the data
-        var turnCount:Int = 0;
-        for (i in 0..._model.SectionsCount)
-        { 
-            if (_model.getSectionByIndex(i) == null)
-            {
-                break;
-            }
-
-            if (_model.getSectionByIndex(i).Direction == _inputData.Direction)
-            {
-                ++turnCount;
-            }
-        }
-
-        if (turnCount == _model.SectionsCount)
-        {
-            trace("consume input data 2");
-             _inputData = null;
-            InputProcessedSignal.dispatch();            
-        }
+        _inputData = null;
+        InputProcessedSignal.dispatch();
     }
 
-    private function killSnake()
+    private function die()
     {
         SnakeDiedSignal.dispatch();
     }

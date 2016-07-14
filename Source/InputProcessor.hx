@@ -1,6 +1,7 @@
 package;
 
 import openfl.events.KeyboardEvent;
+import openfl.ui.Keyboard;
 import openfl.Lib;
 
 class InputProcessor
