@@ -30,7 +30,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
         Signals.inputChangedSignal.add(processInput);
 
         _model = new SnakeModel();
-        _model.Colour = 0x00AAFF;
+        _model.colour = 0x00AAFF;
         
         createSections(length);
     }
@@ -43,6 +43,11 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
     public function update():Void
     {
         move();
+    }
+
+    public function updateFood(foodModel:IFoodModel)
+    {
+        this.foodModel = foodModel;
     }
 
 
@@ -61,7 +66,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
         var previousSectionPosition = { x:0.0, y:0.0 };
         var tempSectionPosition = { x:0.0, y:0.0 };
 
-        for (i in 0..._model.SectionsCount)
+        for (i in 0..._model.sectionsCount)
         {
             var section = _model.getSectionByIndex(i);
             if (section == null)
@@ -122,7 +127,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
                 }
 
                 // detect collission with body
-                for (j in 1..._model.SectionsCount)
+                for (j in 1..._model.sectionsCount)
                 {
                     var bodySection = _model.getSectionByIndex(j);
                     if (bodySection == null)
@@ -174,6 +179,23 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
 
     private function collectFood()
     {
+        // attach a new section
+        var tempSection:SnakeSection = null;
+        for (i in 0..._model.sectionsCount)
+        {   
+            tempSection = _model.getSectionByIndex(i);
+            if (tempSection == null)
+            {
+                var s = new SnakeSection(_model.colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
+                s.direction = Constants.DIRECTION_RIGHT;
+                _model.addSection(s, i);
+
+                var previousSection = _model.getSectionByIndex(i - 1);
+                attachSection(s, previousSection.x, previousSection.y, previousSection.direction);
+                break;
+            }
+        }
+
         Signals.foodConsumedSignal.dispatch();
     }
 
@@ -222,7 +244,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
     {
         for (i in 0...length)
         {   
-            var s = new SnakeSection(_model.Colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
+            var s = new SnakeSection(_model.colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
             s.direction = Constants.DIRECTION_RIGHT;
             _model.addSection(s, i);
             if (i == 0)

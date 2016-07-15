@@ -40,6 +40,7 @@ class Main extends Sprite
 		super();
 
 		addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+		Signals.foodConsumedSignal.add(onFoodConsumed);
 	}
 
 	public static function main()
@@ -125,6 +126,16 @@ class Main extends Sprite
 		setGameState(GameState.GameOver);
 	}
 
+	private function onFoodConsumed()
+	{
+		if (_food != null)
+		{
+			this.removeChild(_food);
+		}
+
+		generateFood();
+	}
+
 	private function resetGame()
 	{
 		// stop all input
@@ -165,8 +176,7 @@ class Main extends Sprite
 		_snake = new Snake(Constants.MIN_SNAKE_SECTIONS_COUNT);
         this.addChild(_snake);
 
-		_food = new Food(0xFF0000, _snake.model);
-		this.addChild(_food);
+		generateFood();
 
 		_snake.foodModel = _food.model;
 		_snake.snakeDiedSignal.add(onSnakeDied);
@@ -184,5 +194,16 @@ class Main extends Sprite
 
 		// start update
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
+	}
+
+	private function generateFood()
+	{
+		_food = new Food(0xFF0000, _snake.model);
+		this.addChild(_food);
+
+		if (_snake != null)
+		{
+			_snake.updateFood(_food.model);
+		}
 	}
 }

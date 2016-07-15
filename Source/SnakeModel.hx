@@ -2,16 +2,13 @@ package;
 
 class SnakeModel
 {
-    public var IsAlive(default, null):Bool;   
-    public var Colour(default, default):Int;
-    public var SectionsCount(get, null):Int;
+    public var colour(default, default):Int;
+    public var sectionsCount(get, null):Int;
 
     private var _sections:haxe.ds.Vector<SnakeSection>;
 
     public function new()
     {
-        IsAlive = true;
-
         // find another data structure
         // arbitrary value
         // ideally should have used List but Haxe List is weird and
@@ -37,7 +34,7 @@ class SnakeModel
         return _sections[0];
     }
 
-    private function get_SectionsCount():Int
+    private function get_sectionsCount():Int
     {
         return _sections.length;
     }

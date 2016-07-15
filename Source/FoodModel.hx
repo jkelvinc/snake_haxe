@@ -39,7 +39,7 @@ class FoodModel implements IFoodModel
         // check if food is on part of the snake
         if (this.snakeModel != null)
         {   
-            for (i in 0...this.snakeModel.SectionsCount)
+            for (i in 0...this.snakeModel.sectionsCount)
             {
                 var snakeSection = this.snakeModel.getSectionByIndex(i);
                 // ugly for now because of stupid vector
