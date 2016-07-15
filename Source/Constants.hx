@@ -16,4 +16,6 @@ class Constants
     public static inline var DIRECTION_LEFT = "Left";
     public static inline var DIRECTION_UP = "Up";
     public static inline var DIRECTION_DOWN = "Down";
+
+    public static inline var FOOD_POINTS_VALUE = 10;
 }

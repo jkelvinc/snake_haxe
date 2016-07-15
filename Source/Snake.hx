@@ -29,7 +29,7 @@ class Snake extends Sprite implements IUpdatable
     public function init(length:Int):Void
     {
         SnakeDiedSignal = new Signal0();
-        Signals.InputChangedSignal.add(processInput);
+        Signals.inputChangedSignal.add(processInput);
 
         _model = new SnakeModel();
         _model.Colour = 0x00AAFF;
@@ -160,8 +160,8 @@ class Snake extends Sprite implements IUpdatable
         }
 
         _inputData = null;
-        // InputProcessedSignal.dispatch();
-        Signals.InputProcessedSignal.dispatch();
+        
+        Signals.inputProcessedSignal.dispatch();
     }
 
     private function die()
@@ -171,7 +171,7 @@ class Snake extends Sprite implements IUpdatable
 
     private function collectFood()
     {
-
+        Signals.foodConsumedSignal.dispatch();
     }
 
     private function get_Model():SnakeModel

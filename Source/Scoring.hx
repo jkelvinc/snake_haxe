@@ -1,5 +1,9 @@
 package;
 
+import api.IScoreModel;
+
+import msignal.Signal;
+
 import openfl.display.Sprite;
 import openfl.text.TextField;
 
@@ -7,7 +11,7 @@ class Scoring extends Sprite
 {
     private var _score:Int;
     private var _scoreTextField:TextField;
-
+    private var _model:IScoreModel;
 
     public function new()
     {
@@ -17,17 +21,40 @@ class Scoring extends Sprite
 
     public function init()
     {
-        _score = 0;
+        Signals.foodConsumedSignal.add(onFoodConsumed);
+        Signals.resetScoreSignal.add(onResetScore);
+
+        _model = new ScoreModel();
+
         _scoreTextField = new TextField();
-        _scoreTextField.text = "Score: ";
         this.addChild(_scoreTextField);
+
+        onResetScore();
     }
 
-    /*
-    * To be called when a food has been eaten (signal)
-    */
-    public function UpdateScore()
+    private function onResetScore()
     {
+        _model.reset();
+        render();
+    }
 
+    private function onFoodConsumed()
+    {
+        trace("on food consumed");
+        increaseScore(Constants.FOOD_POINTS_VALUE);
+    }
+
+    private function increaseScore(points:Int)
+    {
+        _model.increaseScore(points);
+        render();
+    }
+
+    private function render()
+    {
+        if (_scoreTextField != null)
+        {
+            _scoreTextField.text = "Score: " + _model.score;
+        }
     }
 }

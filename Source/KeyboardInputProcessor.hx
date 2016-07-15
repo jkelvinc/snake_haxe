@@ -11,14 +11,14 @@ class KeyboardInputProcessor implements IInputProcessorAdapter
 	private var _enabled:Bool;
 	private var _lastKeyCode:Int;
 	
-	
+
     public function new()
     {
     }
 
     public function enable()
     {
-        Signals.InputProcessedSignal.add(onInputProcessed);
+        Signals.inputProcessedSignal.add(onInputProcessed);
 		
         Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		_enabled = true;
@@ -26,7 +26,7 @@ class KeyboardInputProcessor implements IInputProcessorAdapter
 
     public function disable()
     {
-        Signals.InputProcessedSignal.remove(onInputProcessed);
+        Signals.inputProcessedSignal.remove(onInputProcessed);
 
         Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		_enabled = false;
@@ -80,6 +80,6 @@ class KeyboardInputProcessor implements IInputProcessorAdapter
 			_enabled = false;
 		}
 
-		Signals.InputChangedSignal.dispatch(inputData);
+		Signals.inputChangedSignal.dispatch(inputData);
 	}
 }

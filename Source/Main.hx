@@ -150,7 +150,8 @@ class Main extends Sprite
 	private function createNewGame()
 	{
 		// reset score
-
+		Signals.resetScoreSignal.dispatch();
+		
 		// create new game elements
 		_snake = new Snake(Constants.MIN_SNAKE_SECTIONS_COUNT);
         this.addChild(_snake);
