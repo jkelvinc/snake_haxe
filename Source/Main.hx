@@ -2,6 +2,7 @@ package;
 
 import api.IUpdatable;
 import api.IInputProcessorAdapter;
+import api.IDisposable;
 
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -30,6 +31,7 @@ class Main extends Sprite
 	private var _timer:Timer;
 
 	private var _updateList:List<IUpdatable> = new List<IUpdatable>();
+	private var _disposableList:List<IDisposable> = new List<IDisposable>();
 	private var _inputProcessor:IInputProcessorAdapter;
 
 
@@ -134,6 +136,13 @@ class Main extends Sprite
 		// clear update list
 		_updateList.clear();
 
+		// dispose objects and clear list
+		for (obj in _disposableList)
+		{
+			obj.dispose();
+		}
+		_disposableList.clear();
+
 		// stop update
 		stage.removeEventListener(Event.ENTER_FRAME, onUpdate);
 
@@ -156,13 +165,16 @@ class Main extends Sprite
 		_snake = new Snake(Constants.MIN_SNAKE_SECTIONS_COUNT);
         this.addChild(_snake);
 
-		_food = new Food(0xFF0000, _snake.Model);
+		_food = new Food(0xFF0000, _snake.model);
 		this.addChild(_food);
 
-		_snake.Food = _food;
-		_snake.SnakeDiedSignal.add(onSnakeDied);
+		_snake.foodModel = _food.model;
+		_snake.snakeDiedSignal.add(onSnakeDied);
 		
 		_updateList.add(_snake);
+
+		_disposableList.add(_snake);
+		_disposableList.add(_food);
 
 		// accept input
 		if (_inputProcessor != null)

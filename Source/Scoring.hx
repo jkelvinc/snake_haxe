@@ -1,13 +1,14 @@
 package;
 
 import api.IScoreModel;
+import api.IDisposable;
 
 import msignal.Signal;
 
 import openfl.display.Sprite;
 import openfl.text.TextField;
 
-class Scoring extends Sprite
+class Scoring extends Sprite implements IDisposable
 {
     private var _score:Int;
     private var _scoreTextField:TextField;
@@ -16,11 +17,7 @@ class Scoring extends Sprite
     public function new()
     {
         super();
-        init();
-    }
 
-    public function init()
-    {
         Signals.foodConsumedSignal.add(onFoodConsumed);
         Signals.resetScoreSignal.add(onResetScore);
 
@@ -32,6 +29,12 @@ class Scoring extends Sprite
         onResetScore();
     }
 
+    public function dispose()
+    {
+        Signals.foodConsumedSignal.remove(onFoodConsumed);
+        Signals.resetScoreSignal.remove(onResetScore);
+    }
+
     private function onResetScore()
     {
         _model.reset();
@@ -40,7 +43,6 @@ class Scoring extends Sprite
 
     private function onFoodConsumed()
     {
-        trace("on food consumed");
         increaseScore(Constants.FOOD_POINTS_VALUE);
     }
 

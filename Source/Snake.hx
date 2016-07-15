@@ -1,6 +1,8 @@
 package;
 
 import api.IUpdatable;
+import api.IDisposable;
+import api.IFoodModel;
 
 import msignal.Signal;
 
@@ -9,13 +11,13 @@ import openfl.utils.Timer;
 import openfl.events.TimerEvent;
 import openfl.Lib;
 
-class Snake extends Sprite implements IUpdatable
+class Snake extends Sprite implements IUpdatable implements IDisposable
 {
-    public var Model(get, null):SnakeModel;
-    public var SnakeDiedSignal(default, null):Signal0;
+    public var model(get, null):SnakeModel;
+    public var snakeDiedSignal(default, null):Signal0;
     
     // look into minject to inject that later
-    public var Food(default, default):Food;
+    public var foodModel(default, default):IFoodModel;
     private var _model:SnakeModel;
     private var _inputData:InputData;
     
@@ -23,18 +25,19 @@ class Snake extends Sprite implements IUpdatable
     public function new(length:Int)
     {
         super();
-        init(length);
-    }
-
-    public function init(length:Int):Void
-    {
-        SnakeDiedSignal = new Signal0();
+        
+        snakeDiedSignal = new Signal0();
         Signals.inputChangedSignal.add(processInput);
 
         _model = new SnakeModel();
         _model.Colour = 0x00AAFF;
         
         createSections(length);
+    }
+
+    public function dispose()
+    {
+        Signals.inputChangedSignal.remove(processInput);
     }
 
     public function update():Void
@@ -104,7 +107,7 @@ class Snake extends Sprite implements IUpdatable
                 }
 
                 // detect collision with food
-                if (Food != null && section.x == Food.x && section.y == Food.y)
+                if (foodModel != null && section.x == foodModel.positionX && section.y == foodModel.positionY)
                 {
                     collectFood();
                 }
@@ -118,7 +121,7 @@ class Snake extends Sprite implements IUpdatable
                     die();
                 }
 
-                //Detect collission with body
+                // detect collission with body
                 for (j in 1..._model.SectionsCount)
                 {
                     var bodySection = _model.getSectionByIndex(j);
@@ -166,7 +169,7 @@ class Snake extends Sprite implements IUpdatable
 
     private function die()
     {
-        SnakeDiedSignal.dispatch();
+        snakeDiedSignal.dispatch();
     }
 
     private function collectFood()
@@ -174,7 +177,7 @@ class Snake extends Sprite implements IUpdatable
         Signals.foodConsumedSignal.dispatch();
     }
 
-    private function get_Model():SnakeModel
+    private function get_model():SnakeModel
     {
         return _model;
     }
