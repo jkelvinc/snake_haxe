@@ -1,80 +1,83 @@
 package;
 
+import api.IInputProcessorAdapter;
+
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
 import openfl.Lib;
 
-class InputProcessor
+class KeyboardInputProcessor implements IInputProcessorAdapter
 {
-	private var _canAcceptInput:Bool;
-	private var _lastKeyboardButton:Int;
+	private var _enabled:Bool;
+	private var _lastKeyCode:Int;
+	
 	
     public function new()
     {
     }
 
-    public function acceptInput()
+    public function enable()
     {
         Signals.InputProcessedSignal.add(onInputProcessed);
 		
         Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-		_canAcceptInput = true;
+		_enabled = true;
     }
 
-    public function stopInput()
+    public function disable()
     {
         Signals.InputProcessedSignal.remove(onInputProcessed);
 
         Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-		_canAcceptInput = false;
+		_enabled = false;
     }
 
 
 	private function onInputProcessed()
 	{
-		_canAcceptInput = true;
+		_enabled = true;
 	}
 
     private function onKeyDown(evt:KeyboardEvent)
 	{
-		if (!_canAcceptInput)
+		if (!_enabled)
 		{
 			return;
 		}
 
 		var inputData = new InputData();
 
-		if (evt.keyCode == Keyboard.LEFT && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.RIGHT)
+		if (evt.keyCode == Keyboard.LEFT && _lastKeyCode != evt.keyCode && _lastKeyCode != Keyboard.RIGHT)
 		{
 			// can't go LEFT if we just went RIGHT
 			trace("LEFT");
-			_lastKeyboardButton = Keyboard.LEFT;
+			_lastKeyCode = Keyboard.LEFT;
 			inputData.Direction = Constants.DIRECTION_LEFT;
-			_canAcceptInput = false;
+			_enabled = false;
 		}
-		else if (evt.keyCode == Keyboard.RIGHT && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.LEFT)
+		else if (evt.keyCode == Keyboard.RIGHT && _lastKeyCode != evt.keyCode && _lastKeyCode != Keyboard.LEFT)
 		{
 			// can't go RIGHT if we just went LEFT
 			trace("RIGHT");
-			_lastKeyboardButton = Keyboard.RIGHT;
+			_lastKeyCode = Keyboard.RIGHT;
 			inputData.Direction = Constants.DIRECTION_RIGHT;
-			_canAcceptInput = false;
+			_enabled = false;
 		}
-		else if (evt.keyCode == Keyboard.UP && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.DOWN)
+		else if (evt.keyCode == Keyboard.UP && _lastKeyCode != evt.keyCode && _lastKeyCode != Keyboard.DOWN)
 		{
 			// can't go UP if we just went DOWN
 			trace("UP");
-			_lastKeyboardButton = Keyboard.UP;
+			_lastKeyCode = Keyboard.UP;
 			inputData.Direction = Constants.DIRECTION_UP;
-			_canAcceptInput = false;
+			_enabled = false;
 		}
-		else if (evt.keyCode == Keyboard.DOWN && _lastKeyboardButton != evt.keyCode && _lastKeyboardButton != Keyboard.UP)
+		else if (evt.keyCode == Keyboard.DOWN && _lastKeyCode != evt.keyCode && _lastKeyCode != Keyboard.UP)
 		{
 			// can't go DOWN if we just went UP
 			trace("DOWN");
-			_lastKeyboardButton = Keyboard.DOWN;
+			_lastKeyCode = Keyboard.DOWN;
 			inputData.Direction = Constants.DIRECTION_DOWN;
-			_canAcceptInput = false;
+			_enabled = false;
 		}
 
 		Signals.InputChangedSignal.dispatch(inputData);

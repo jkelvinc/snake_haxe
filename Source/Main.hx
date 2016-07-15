@@ -1,6 +1,7 @@
 package;
 
 import api.IUpdatable;
+import api.IInputProcessorAdapter;
 
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -20,7 +21,7 @@ class Main extends Sprite
 	private var _timer:Timer;
 
 	private var _updateList:List<IUpdatable> = new List<IUpdatable>();
-	private var _inputProcessor:InputProcessor;
+	private var _inputProcessor:IInputProcessorAdapter;
 
 
 	/* ENTRY POINT */
@@ -45,7 +46,7 @@ class Main extends Sprite
 
 		stage.addEventListener(Event.ENTER_FRAME, onUpdate);
 
-		_inputProcessor = new InputProcessor();
+		_inputProcessor = new KeyboardInputProcessor();
 
 		// TODO: take a look at IOC via minject
 
@@ -61,7 +62,7 @@ class Main extends Sprite
 		_snake.Food = _food;
 		_snake.SnakeDiedSignal.add(onSnakeDied);
 		
-		_inputProcessor.acceptInput();
+		_inputProcessor.enable();
 		_updateList.add(_snake);
 	}
 
@@ -107,12 +108,24 @@ class Main extends Sprite
 
 	private function onSnakeDied()
 	{
-		trace("Snake Died");
-
+		// stop all input
 		if (_inputProcessor != null)
 		{
-			_inputProcessor.stopInput();
+			_inputProcessor.disable();
 		}
+
+		// remove snake
+
+		// generate food
+
+		// start game
+
+		// accept input
+		if (_inputProcessor != null)
+		{
+			_inputProcessor.enable();
+		}
+		
 		stage.removeEventListener(Event.ENTER_FRAME, onUpdate);
 	}
 }

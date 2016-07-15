@@ -1,6 +1,7 @@
 package;
 
 import api.IUpdatable;
+
 import msignal.Signal;
 
 import openfl.display.Sprite;
@@ -17,7 +18,7 @@ class Snake extends Sprite implements IUpdatable
     public var Food(default, default):Food;
     private var _model:SnakeModel;
     private var _inputData:InputData;
-    private var _inputProcessor:InputProcessor;
+    
 
     public function new(length:Int)
     {
