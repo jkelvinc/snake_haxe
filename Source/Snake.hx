@@ -76,14 +76,14 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
                 // process input
                 if (_inputData != null)
                 {
-                    section.Direction = _inputData.Direction;
+                    section.direction = _inputData.Direction;
                 }
 
                 previousSectionPosition.x = section.x;
                 previousSectionPosition.y = section.y;
 
                 // move head
-                switch (section.Direction)
+                switch (section.direction)
                 {
                     case Constants.DIRECTION_RIGHT:
                     {
@@ -223,7 +223,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
         for (i in 0...length)
         {   
             var s = new SnakeSection(_model.Colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
-            s.Direction = "Right";
+            s.direction = Constants.DIRECTION_RIGHT;
             _model.addSection(s, i);
             if (i == 0)
             {
@@ -232,14 +232,14 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
                 attachSection(s, 
                             (s.width + Constants.GRID_ELEMENT_SPACING) * Constants.SNAKE_STARTING_XPOS, 
                             (s.height + Constants.GRID_ELEMENT_SPACING) * Constants.SNAKE_STARTING_YPOS, 
-                            s.Direction);
+                            s.direction);
             }
             else
             {
                 // rest of body
                 var previousSection = _model.getSectionByIndex(i - 1);
 
-                attachSection(s, previousSection.x, previousSection.y, previousSection.Direction);
+                attachSection(s, previousSection.x, previousSection.y, previousSection.direction);
             }
         }
     }

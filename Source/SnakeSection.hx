@@ -4,7 +4,7 @@ import openfl.display.Sprite;
 
 class SnakeSection extends Sprite
 {
-    public var Direction(default, default):String;
+    public var direction(default, default):String;
     
     public function new(colour:Int, width:Int, height:Int)
     {
