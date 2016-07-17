@@ -2,7 +2,7 @@ package;
 
 class InputData
 {
-    public var Direction(default, default):String;
+    public var direction(default, default):String;
 
     public function new()
     {

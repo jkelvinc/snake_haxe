@@ -66,23 +66,19 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
         var previousSectionPosition = { x:0.0, y:0.0 };
         var tempSectionPosition = { x:0.0, y:0.0 };
 
-        for (i in 0..._model.sectionsCount)
+        for (i in 0..._model.length)
         {
             var section = _model.getSectionByIndex(i);
-            if (section == null)
+
+            // process input
+            if (_inputData != null)
             {
-                break;
+                section.direction = _inputData.direction;
             }
 
             if (i == 0)
             {
                 // process head
-
-                // process input
-                if (_inputData != null)
-                {
-                    section.direction = _inputData.Direction;
-                }
 
                 previousSectionPosition.x = section.x;
                 previousSectionPosition.y = section.y;
@@ -123,20 +119,18 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
                     section.y > Lib.current.stage.stageHeight - section.height || 
                     section.y < 0)
                 {
+                    trace("collision with border");
                     die();
                 }
 
                 // detect collission with body
-                for (j in 1..._model.sectionsCount)
+                for (j in 1..._model.length)
                 {
                     var bodySection = _model.getSectionByIndex(j);
-                    if (bodySection == null)
-                    {
-                        break;
-                    }
 
                     if (section.x == bodySection.x && section.y == bodySection.y)
                     {
+                        trace("collision with body - head x: " + section.x + ", head y: " + section.y + " | body x: " + bodySection.x + ", body y: " + bodySection.y);
                         die();
                     }
                 }
@@ -179,22 +173,14 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
 
     private function collectFood()
     {
-        // attach a new section
-        var tempSection:SnakeSection = null;
-        for (i in 0..._model.sectionsCount)
-        {   
-            tempSection = _model.getSectionByIndex(i);
-            if (tempSection == null)
-            {
-                var s = new SnakeSection(_model.colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
-                s.direction = Constants.DIRECTION_RIGHT;
-                _model.addSection(s, i);
+        trace("collectFood()");
 
-                var previousSection = _model.getSectionByIndex(i - 1);
-                attachSection(s, previousSection.x, previousSection.y, previousSection.direction);
-                break;
-            }
-        }
+        // attach a new section
+        var snakeTail = _model.getTail();
+        var s = new SnakeSection(_model.colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
+        s.direction = Constants.DIRECTION_RIGHT;
+        
+        attachSection(s, snakeTail.x, snakeTail.y, snakeTail.direction);
 
         Signals.foodConsumedSignal.dispatch();
     }
@@ -210,6 +196,8 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
     **/
     private function attachSection(section:SnakeSection, lastSectionXPos:Float, lastSectionYPos:Float, direction:String)
     {
+        _model.addSection(section);
+
         switch (direction)
         {
             case Constants.DIRECTION_RIGHT:
@@ -246,7 +234,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
         {   
             var s = new SnakeSection(_model.colour, Constants.GRID_ELEMENT_WIDTH, Constants.GRID_ELEMENT_HEIGHT);
             s.direction = Constants.DIRECTION_RIGHT;
-            _model.addSection(s, i);
+            
             if (i == 0)
             {
                 // head
@@ -260,7 +248,6 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
             {
                 // rest of body
                 var previousSection = _model.getSectionByIndex(i - 1);
-
                 attachSection(s, previousSection.x, previousSection.y, previousSection.direction);
             }
         }

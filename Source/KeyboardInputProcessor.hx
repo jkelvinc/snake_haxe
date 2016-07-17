@@ -52,7 +52,7 @@ class KeyboardInputProcessor implements IInputProcessorAdapter
 			// can't go LEFT if we just went RIGHT
 			trace("LEFT");
 			_lastKeyCode = Keyboard.LEFT;
-			inputData.Direction = Constants.DIRECTION_LEFT;
+			inputData.direction = Constants.DIRECTION_LEFT;
 			_enabled = false;
 		}
 		else if (evt.keyCode == Keyboard.RIGHT && _lastKeyCode != evt.keyCode && _lastKeyCode != Keyboard.LEFT)
@@ -60,7 +60,7 @@ class KeyboardInputProcessor implements IInputProcessorAdapter
 			// can't go RIGHT if we just went LEFT
 			trace("RIGHT");
 			_lastKeyCode = Keyboard.RIGHT;
-			inputData.Direction = Constants.DIRECTION_RIGHT;
+			inputData.direction = Constants.DIRECTION_RIGHT;
 			_enabled = false;
 		}
 		else if (evt.keyCode == Keyboard.UP && _lastKeyCode != evt.keyCode && _lastKeyCode != Keyboard.DOWN)
@@ -68,7 +68,7 @@ class KeyboardInputProcessor implements IInputProcessorAdapter
 			// can't go UP if we just went DOWN
 			trace("UP");
 			_lastKeyCode = Keyboard.UP;
-			inputData.Direction = Constants.DIRECTION_UP;
+			inputData.direction = Constants.DIRECTION_UP;
 			_enabled = false;
 		}
 		else if (evt.keyCode == Keyboard.DOWN && _lastKeyCode != evt.keyCode && _lastKeyCode != Keyboard.UP)
@@ -76,7 +76,7 @@ class KeyboardInputProcessor implements IInputProcessorAdapter
 			// can't go DOWN if we just went UP
 			trace("DOWN");
 			_lastKeyCode = Keyboard.DOWN;
-			inputData.Direction = Constants.DIRECTION_DOWN;
+			inputData.direction = Constants.DIRECTION_DOWN;
 			_enabled = false;
 		}
 
