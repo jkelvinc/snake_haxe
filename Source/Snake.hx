@@ -73,7 +73,11 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
             // process input
             if (_inputData != null)
             {
-                section.direction = _inputData.direction;
+                var isNewDirectionValid = validateInput(section.direction);
+                if (isNewDirectionValid)
+                {
+                    section.direction = _inputData.direction;
+                }
             }
 
             if (i == 0)
@@ -119,7 +123,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
                     section.y > Lib.current.stage.stageHeight - section.height || 
                     section.y < 0)
                 {
-                    trace("collision with border");
+                    // trace("collision with border");
                     die();
                 }
 
@@ -130,7 +134,7 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
 
                     if (section.x == bodySection.x && section.y == bodySection.y)
                     {
-                        trace("collision with body - head x: " + section.x + ", head y: " + section.y + " | body x: " + bodySection.x + ", body y: " + bodySection.y);
+                        // trace("collision with body - head x: " + section.x + ", head y: " + section.y + " | body x: " + bodySection.x + ", body y: " + bodySection.y);
                         die();
                     }
                 }
@@ -152,6 +156,39 @@ class Snake extends Sprite implements IUpdatable implements IDisposable
         }
 
         consumeInputData();
+    }
+
+    private function validateInput(currentDirection:String):Bool
+    {
+        if (_inputData == null)
+        {
+            return false;
+        }
+
+        switch (_inputData.direction)
+        {
+            case Constants.DIRECTION_LEFT:
+            {
+                return (currentDirection != Constants.DIRECTION_RIGHT);
+            }
+
+            case Constants.DIRECTION_RIGHT:
+            {
+                return (currentDirection != Constants.DIRECTION_LEFT);
+            }
+
+            case Constants.DIRECTION_UP:
+            {
+                return (currentDirection != Constants.DIRECTION_DOWN);
+            }
+
+            case Constants.DIRECTION_DOWN:
+            {
+                return (currentDirection != Constants.DIRECTION_UP);
+            }
+        }
+
+        return true;
     }
 
     private function consumeInputData()
